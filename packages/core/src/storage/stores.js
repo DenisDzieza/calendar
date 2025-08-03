@@ -96,16 +96,24 @@ export function events(state) {
     let abortController;
     let fetching = 0;
     let debounceHandle = {};
+    let previousEventSources = null;
+    
+    
     derived(
-        [state.events, state.eventSources, state._activeRange, state._fetchedRange, state.lazyFetching, state.loading],
+        [state.events, state.eventSources, state._activeRange, state._fetchedRange, state.lazyFetching, state.loading, state.transformFetchedData],
         (values, set) => debounce(() => {
-            let [$events, $eventSources, $_activeRange, $_fetchedRange, $lazyFetching, $loading] = values;
+            let [$events, $eventSources, $_activeRange, $_fetchedRange, $lazyFetching, $loading, $transformFetchedData] = values;
             if (!$eventSources.length) {
                 set($events);
+                previousEventSources = null;
                 return;
             }
-            // Do not fetch if new range is within the previous one
-            if (!$_fetchedRange.start || $_fetchedRange.start > $_activeRange.start || $_fetchedRange.end < $_activeRange.end || !$lazyFetching) {
+            
+            // Check if event sources have changed
+            const eventSourcesChanged = previousEventSources !== JSON.stringify($eventSources);
+            
+            // Do not fetch if new range is within the previous one AND event sources haven't changed
+            if ((!$_fetchedRange.start || $_fetchedRange.start > $_activeRange.start || $_fetchedRange.end < $_activeRange.end || !$lazyFetching) || eventSourcesChanged) {
                 if (abortController) {
                     // Abort previous request
                     abortController.abort();
@@ -125,7 +133,9 @@ export function events(state) {
                 // Prepare handlers
                 let failure = e => stopLoading();
                 let success = data => {
-                    events = events.concat(createEvents(data));
+                    // Apply transformFetchedData callback if defined
+                    let transformedData = isFunction($transformFetchedData) ? $transformFetchedData(data) : data;
+                    events = events.concat(createEvents(transformedData));
                     set(events);
                     stopLoading();
                 };
@@ -171,6 +181,8 @@ export function events(state) {
                 // Save current range for future requests
                 $_fetchedRange.start = $_activeRange.start;
                 $_fetchedRange.end = $_activeRange.end;
+                // Save current event sources for future comparison
+                previousEventSources = JSON.stringify($eventSources);
             }
         }, debounceHandle, state._queue),
         []

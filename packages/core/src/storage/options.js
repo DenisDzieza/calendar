@@ -117,6 +117,7 @@ export function createOptions(plugins) {
             month: 'short',
             day: 'numeric'
         },
+        transformFetchedData: undefined,
         validRange: undefined,
         view: undefined,
         viewDidMount: undefined,
