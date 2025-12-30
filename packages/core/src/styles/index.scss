@@ -347,7 +347,7 @@
 
   &.ec-preview {
     position: absolute;
-    z-index: 1000;
+    z-index: 10;
     width: 100%;
     user-select: none;
     opacity: .8;
@@ -459,7 +459,7 @@
   flex-direction: column;
   width: 110%;
   min-width: 180px;
-  z-index: 1010;
+  z-index: 11;
   padding: 8px 10px 14px;
   background-color: var(--ec-popup-bg-color);
   border: 1px solid var(--ec-border-color);
@@ -496,7 +496,7 @@
 
 .ec-now-indicator {
   position: absolute;
-  z-index: 1005;
+  z-index: 15;
   pointer-events: none;
   .ec-time-grid & {
     width: 100%;
