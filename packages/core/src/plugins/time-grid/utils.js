@@ -41,7 +41,7 @@ export function groupEventChunks(chunks) {
 }
 
 export function createAllDayContent(allDayContent) {
-    let text = 'all-day';
+    let text = 'ganztägig';// 'all-day';
     let content;
     if (allDayContent) {
         content = isFunction(allDayContent) ? allDayContent({text}) : allDayContent;
