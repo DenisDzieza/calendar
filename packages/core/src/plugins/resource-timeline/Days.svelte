@@ -62,12 +62,13 @@
 
     export function reposition() {
         height = ceil(max(...runReposition(refs, $_viewDates))) + 10;
-        $_resHs.set(resource, height);
+        // Key by id — object identity breaks under Svelte 5 proxies
+        $_resHs.set(resource.id, height);
         $_resHs = $_resHs;
     }
 </script>
 
-<div class="{$theme.days}" style="flex-basis: {max(height, 34)}px" role="row">
+<div class="{$theme.days}" style="flex-basis: {max(height, 34)}px; height: {max(height, 34)}px" role="row">
     {#each $_viewDates as date, i}
         <!-- svelte-ignore binding_property_non_reactive -->
         <Day {date} {resource} {chunks} {bgChunks} {longChunks} {iChunks} bind:this={refs[i]}/>
